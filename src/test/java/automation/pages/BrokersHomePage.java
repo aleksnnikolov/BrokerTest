@@ -2,6 +2,7 @@ package automation.pages;
 
 import automation.Page;
 import automation.domain.Broker;
+import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 import static java.lang.Integer.parseInt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Log4j2
 public class BrokersHomePage extends Page {
 
     Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(5));
@@ -44,12 +46,15 @@ public class BrokersHomePage extends Page {
     public void closeCookiesOverlayIfPresent() {
         if (closeCookiesButton.isDisplayed()) {
             closeCookiesButton.click();
+            wait.until(d -> !closeCookiesButton.isDisplayed());
+            log.info("closed cookies overlay");
         }
     }
 
     public void clickLoadMore() {
         loadMoreButton.click();
         wait.until(driver -> !loadMoreButton.isDisplayed());
+        log.info("loaded all the brokers in the page");
     }
 
     public List<Broker> getAllBrokers() {
@@ -60,6 +65,7 @@ public class BrokersHomePage extends Page {
             brokerList.add(extractBrokerInfo(brokerCard));
         }
 
+        log.info("retrieved " + brokerList.size() + " visible brokers from page");
         return brokerList;
     }
 
@@ -67,9 +73,7 @@ public class BrokersHomePage extends Page {
         int totalBrokerAmount = getNumberOfVisibleBrokers();
 
         for (Broker currentBroker : brokerList) {
-            clearAllButton.click();
-            wait.until(driver -> getNumberOfVisibleBrokers() == totalBrokerAmount);
-
+            log.info("searching for broker: " + currentBroker.getName());
             new Actions(driver).moveToElement(searchInput).click().sendKeys(currentBroker.getName()).build().perform();
             wait.until(driver -> getNumberOfVisibleBrokers() < totalBrokerAmount);
 
@@ -81,9 +85,12 @@ public class BrokersHomePage extends Page {
             // Allowed myself to check the broker's info only if there is only one broker visible
             // Checking the info for multiple on-screen brokers would complicate the test by a bit
             // In a real scenario I would check in with the client for testing this specific scenario
-
+            log.info("verifying presence of broker's info: " + currentBroker.getName());
             if (numberOfBrokersWithSameName == 1)
                 verifyBrokerInfo(currentBroker);
+
+            clearAllButton.click();
+            wait.until(driver -> getNumberOfVisibleBrokers() == totalBrokerAmount);
         }
     }
 

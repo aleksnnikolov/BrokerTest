@@ -1,5 +1,6 @@
 import automation.domain.Broker;
 import automation.pages.BrokersHomePage;
+import lombok.extern.log4j.Log4j2;
 import org.example.config.AutomationProperties;
 import org.example.config.BrowserConfig;
 import org.example.config.DriverFactory;
@@ -12,6 +13,7 @@ import org.openqa.selenium.WebDriver;
 
 import java.util.List;
 
+@Log4j2
 public class BrokersPageTest {
 
     private WebDriver driver;
@@ -29,6 +31,10 @@ public class BrokersPageTest {
         browserConfig = new SeleniumBrowserConfig(driver);
         browserConfig.openBrowser();
         browserConfig.navigateTo("https://www.yavlena.com/broker/");
+
+        log.info("");
+        log.info("STARTING TEST");
+        log.info("");
     }
 
     @Test

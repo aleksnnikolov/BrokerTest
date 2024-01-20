@@ -1,10 +1,13 @@
 package org.example.config;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+@Log4j2
 public class AutomationProperties {
 
     public static String PROPERTIES_PATH = "src/main/resources/application.properties";
@@ -31,6 +34,9 @@ public class AutomationProperties {
         } catch (IOException e) {
             throw new RuntimeException("errore during properties loading", e);
         }
+
+        log.info("Loaded properties: ");
+        properties.forEach((key, value) -> log.info("[" + key + " = " + value + "]"));
     }
 
     public String getProperty(String propertyName) {
