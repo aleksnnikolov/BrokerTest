@@ -1,12 +1,14 @@
 import automation.domain.Broker;
 import automation.pages.BrokersHomePage;
+import org.example.config.AutomationProperties;
 import org.example.config.BrowserConfig;
+import org.example.config.DriverFactory;
 import org.example.config.SeleniumBrowserConfig;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.List;
 
@@ -15,9 +17,14 @@ public class BrokersPageTest {
     private WebDriver driver;
     private BrowserConfig browserConfig;
 
+    @BeforeAll
+    public static void environmentSetup() {
+        AutomationProperties.getInstance();
+    }
+
     @BeforeEach
     public void testSetup() {
-        driver = new ChromeDriver();
+        driver = DriverFactory.getDriver();
 
         browserConfig = new SeleniumBrowserConfig(driver);
         browserConfig.openBrowser();

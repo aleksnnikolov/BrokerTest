@@ -9,7 +9,7 @@ import static java.lang.Integer.parseInt;
 
 public class SeleniumBrowserConfig implements BrowserConfig {
 
-    private WebDriver driver;
+    private final WebDriver driver;
 
     public SeleniumBrowserConfig(WebDriver driver) {
         this.driver = driver;
@@ -17,7 +17,8 @@ public class SeleniumBrowserConfig implements BrowserConfig {
 
     @Override
     public void openBrowser() {
-        driver.manage().timeouts().implicitlyWait(Duration.of(5000, ChronoUnit.MILLIS));
+        int implicitWaitTime = parseInt(AutomationProperties.getInstance().getProperty(AutomationProperties.IMPLICIT_WAIT_TIMEOUT));
+        driver.manage().timeouts().implicitlyWait(Duration.of(implicitWaitTime, ChronoUnit.MILLIS));
     }
 
     @Override
