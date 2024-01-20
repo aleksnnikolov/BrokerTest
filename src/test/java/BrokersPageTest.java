@@ -30,6 +30,7 @@ public class BrokersPageTest {
         brokersPage.closeCookiesOverlayIfPresent();
         brokersPage.clickLoadMore();
         List<Broker> brokerList = brokersPage.getAllBrokers();
+        brokersPage.verifyBrokerFiltering(brokerList);
     }
 
     @AfterEach

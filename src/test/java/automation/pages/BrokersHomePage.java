@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BrokersHomePage extends Page {
 
@@ -62,18 +63,23 @@ public class BrokersHomePage extends Page {
     }
 
     public void verifyBrokerFiltering(List<Broker> brokerList) {
-        //TODO: implementation
+        int totalBrokerAmount = getNumberOfVisibleBrokers();
+
+        for (Broker broker : brokerList) {
+            clearAllButton.click();
+            wait.until(driver -> getNumberOfVisibleBrokers() == totalBrokerAmount);
+
+            searchInput.click();
+            searchInput.sendKeys(broker.getName());
+            wait.until(driver -> getNumberOfVisibleBrokers() < totalBrokerAmount);
+
+            int numberOfVisibleBrokers = getNumberOfVisibleBrokers();
+            assertEquals(1, numberOfVisibleBrokers);
+
+            verifyBrokerInfo(broker);
+        }
     }
 
-
-    private Broker extractBrokerInfo(WebElement brokerCard) {
-        String brokerName = brokerCard.findElement(By.className("name")).getText();
-        String address = brokerCard.findElement(By.className("office")).getText();
-        int numberOfProperties = extractNumberOfProperties(brokerCard);
-        List<String> contacts = extractBrokerContacts(brokerCard);
-
-        return new Broker(brokerName, address, numberOfProperties, contacts);
-    }
 
     private int extractNumberOfProperties(WebElement brokerCard) {
         String numberOfPropertiesText = brokerCard.findElement(By.className("position")).findElement(By.tagName("a")).getText();
@@ -86,5 +92,25 @@ public class BrokersHomePage extends Page {
                 .stream()
                 .map(WebElement::getText)
                 .collect(Collectors.toList());
+    }
+
+    private void verifyBrokerInfo(Broker expectedBroker) {
+        WebElement brokerCard = driver.findElement(By.xpath("//article[@class = 'broker-card']"));
+        Broker actualBroker = extractBrokerInfo(brokerCard);
+
+        assertEquals(expectedBroker, actualBroker);
+    }
+
+    private Broker extractBrokerInfo(WebElement brokerCard) {
+        String brokerName = brokerCard.findElement(By.className("name")).getText();
+        String address = brokerCard.findElement(By.className("office")).getText();
+        int numberOfProperties = extractNumberOfProperties(brokerCard);
+        List<String> contacts = extractBrokerContacts(brokerCard);
+
+        return new Broker(brokerName, address, numberOfProperties, contacts);
+    }
+
+    private int getNumberOfVisibleBrokers() {
+        return driver.findElements(By.xpath("//article[@class = 'broker-card']")).size();
     }
 }
